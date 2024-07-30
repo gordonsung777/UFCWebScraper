@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Web Scraping and PDF Generation</title>
+</head>
+<body>
+    <button id="scrape-button">Scrape Data</button>
+    <button id="generate-pdf-button" disabled>Generate PDF</button>
+    <a id="download-pdf-button" style="display: none" href="/download-pdf" download="pic.pdf">Download PDF</a>
+    
+    <script>
+        document.getElementById('scrape-button').addEventListener('click', async () => {
+            // Use AJAX or Fetch to trigger web scraping
+            const response = await fetch('http://localhost:5000/scrape', { method: 'GET' });
+            if (response.status === 200) {
+                // Enable the "Generate PDF" button
+                document.getElementById('generate-pdf-button').disabled = false;
+            } else {
+                alert('Failed to scrape data');
+            }
+        });
+    
+        document.getElementById('generate-pdf-button').addEventListener('click', async () => {
+            // Use AJAX or Fetch to get scraped data
+            const response = await fetch('http://localhost:5000/scrape', { method: 'GET' });
+            if (response.status === 200) {
+                const scrapedData = await response.json();
+
+                // Use AJAX or Fetch to generate the PDF
+                const pdfResponse = await fetch('http://localhost:5000/generate-pdf', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(scrapedData),
+                });
+
+                if (pdfResponse.status === 200) {
+                    // Show the "Download PDF" button
+                    document.getElementById('download-pdf-button').style.display = 'block';
+                } else {
+                    console.error('Failed to generate the PDF:', pdfResponse.status);
+                    alert('Failed to generate the PDF');
+                }
+            } else {
+                alert('Failed to fetch scraped data');
+            }
+        });
+    </script>
+</body>
+</html>
