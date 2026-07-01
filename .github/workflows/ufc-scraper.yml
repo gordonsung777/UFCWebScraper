@@ -1,0 +1,43 @@
+name: UFC Scraper
+
+on:
+  workflow_dispatch:
+    inputs:
+      fighter:
+        description: "Fighter name to scrape" 
+        reqired: false 
+        defailt: "Conor McGregor"
+      max_charts: 
+        description: "Optional max number of PDF charts"
+        required: false 
+        default: ""
+  push: 
+    branches: [main]
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest 
+
+    steps:
+      - name: Checkout repository 
+        uses: actions/checkout@v6
+
+      - name: Set up Python 
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Run scraper 
+        run: | 
+          if [ -z "${{ github.event.inputs.max_charts }}" ]; then
+            python scrape_ufc.py --fighter "${{ github.event.inputs.fighter }}"
+          else 
+            python scrape_ufc.py --fighter "${{ github.event.inputs.fighter }}" --max-charts "${{ github.event.inputs.max_charts }}"
+          fi 
+      
+      - name: Upload outputs 
+        uses: actions/upload-artifact@v4 
+        with: 
+          name: ufc-scraper-output 
+          path: outputs/
