@@ -1,0 +1,14 @@
+name: base
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - flake8
+  - pytest
+  - requests
+  - beautifulsoup4
+  - lxml
+  - pip:
+    - some-pypi-package-if-needed
